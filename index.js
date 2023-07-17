@@ -21,25 +21,65 @@ const client = new MongoClient(uri, {
   }
 });
 
+const verifyJWT = (req, res, next) => {
+    const authorization = req.headers.authorization;
+  
+    if (!authorization) {
+      return res.status(401).send({ error: true, message: "unauthorized acess" });
+    }
+    const token = authorization.split(" ")[1];
+    jwt.verify(token, process.env.DB_ACCESS_TOKEN, function (error, decoded) {
+      if (error) {
+        return res
+          .status(403)
+          .send({ error: true, message: "unauthorized access" });
+      }
+      req.decoded = decoded;
+      next();
+    });
+  };
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
+    const houseHuntingUsers = client.db("houseHuntingDB").collection("houseHuntingUsersCollections")
+
+    app.post("/jwt", async (req, res) => {
+        const user = req.body;
+        const token = jwt.sign(user, process.env.DB_ACCESS_TOKEN, {
+          expiresIn: "1h",
+        });
+        res.send({ token });
+      });
+
+    app.post('/allusers',async (req, res) => {
+        const users = req.body;
+        const query = {
+          email: users.email,
+        };
+        const existingUser = await houseHuntingUsers.findOne(query);
+        if (existingUser) {
+          return res.send({ message: "user already exist" });
+        }
+        const result = await houseHuntingUsers.insertOne(users);
+        res.send(result);
+      })
+      
+
+
+
+      app.get('/allusers',async (req, res) => {
+          const result = await houseHuntingUsers.find().toArray();
+        res.send(result);
+      })
+      
 
 
 
 
 
-
-
-
-
-
-
-
-
-    
     // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
