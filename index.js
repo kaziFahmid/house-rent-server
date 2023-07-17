@@ -60,6 +60,29 @@ async function run() {
        if(req.query?.email){
         query={email:req.query?.email}
        }
+       if(req.query?.city){
+        query={city:{ $regex: req.query?.city, $options: "i" }}
+       }
+       if(req.query?.bedrooms){
+        query={bedrooms:parseInt(req.query?.bedrooms)}
+       }
+       if(req.query?.bathrooms){
+        query={bathrooms:parseInt(req.query?.bathrooms)}
+       }
+       if(req.query?.roomsize){
+        query={roomSize:parseInt(req.query?.roomsize)}
+       }
+       if(req.query?.availabilityDate){
+        query={availabilityDate:{ $regex: req.query?.availabilityDate, $options: "i" }}
+       }
+
+       if (req.query.minRent && req.query.maxRent) {
+        query.rentPerMonth = {
+          $gte: parseInt(req.query.minRent),
+          $lte: parseInt(req.query.maxRent),
+        };
+      }
+    
         const result= await houseHuntingHouses.find(query).toArray()
         res.send(result)
          });
