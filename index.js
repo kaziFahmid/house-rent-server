@@ -74,9 +74,42 @@ async function run() {
             res.send(result)
           })
     
+          app.get('/houses/:id', async(req, res) => {
+         
+            let result= await houseHuntingHouses.findOne({_id: new ObjectId(req.params.id)})
+            res.send(result)
+          })
+    
 
+          app.put('/houses/:id',async (req, res) => {
 
-
+            const id =req.params.id
+            const houseinfo=req.body
+            const filter={_id: new ObjectId(id)}
+            const options = { upsert: true };
+          
+            const updateDoc = {
+              $set: {
+               
+                name:houseinfo.name,
+                address:houseinfo.address,
+                city:houseinfo.city,
+                email:houseinfo.email,
+                bedrooms:houseinfo.bedrooms,
+                bathrooms:houseinfo.bathrooms,
+                roomSize:houseinfo.roomSize,
+                picture:houseinfo. picture,
+                availabilityDate:houseinfo.availabilityDate,
+                rentPerMonth:houseinfo.rentPerMonth,
+                phoneNumber:houseinfo. phoneNumber,
+                description:houseinfo.description,
+              },
+            };
+            const result=await houseHuntingHouses.updateOne(filter, updateDoc, options);
+            res.send(result)
+        
+        
+          })
 
 
 
