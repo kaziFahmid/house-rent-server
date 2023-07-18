@@ -82,12 +82,18 @@ async function run() {
           $lte: parseInt(req.query.maxRent),
         };
       }
-    
-        const result= await houseHuntingHouses.find(query).toArray()
+    const page= parseInt(req.query.page)||0
+    const limit= parseInt(req.query.limit)||10
+    const skip=page*limit
+        const result= await houseHuntingHouses.find(query).skip(skip).limit(limit).toArray()
         res.send(result)
          });
      
 
+         app.get('/housescount',async(req,res)=>{
+            let result= await houseHuntingHouses.estimatedDocumentCount()
+            res.send({result})
+         })
 
 
          app.delete('/houses/:id', async(req, res) => {
