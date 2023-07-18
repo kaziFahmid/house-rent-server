@@ -121,8 +121,8 @@ async function run() {
           $lte: parseInt(req.query.maxRent),
         };
       }
-    const page= parseInt(req.query.page)||0
-    const limit= parseInt(req.query.limit)||10
+    const page= parseInt(req.query.page)
+    const limit= parseInt(req.query.limit)
     const skip=page*limit
         const result= await houseHuntingHouses.find(query).skip(skip).limit(limit).toArray()
         res.send(result)
