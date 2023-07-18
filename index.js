@@ -42,6 +42,45 @@ async function run() {
     const houseHuntingUsers = client.db("houseHuntingDB").collection("houseHuntingUsersCollections");
   
     const houseHuntingHouses = client.db("houseHuntingHouseDB").collection("houseHuntingHousesCollections");
+  
+    const houseHuntingBookings = client.db("houseHuntingBookingDB").collection("houseHuntingBookingsCollections");
+
+
+
+    app.post("/housebookings", async (req, res) => {
+      const books=req.body
+      const result= await houseHuntingBookings.insertOne(books)
+      res.send(result)
+       });
+       
+       app.get("/housebookings", async (req, res) => {
+        let query={}
+        if(req.query?.email){
+          query={email:req.query?.email}
+        }
+        const result= await houseHuntingBookings.find(query).toArray()
+        res.send(result)
+         });
+     
+         app.delete("/housebookings/:id", async (req, res) => {
+       const id=req.params.id
+       const query={_id: new ObjectId(id)}
+          const result= await houseHuntingBookings.deleteOne(query)
+          res.send(result)
+           });
+       
+  
+
+           app.get("/housebookings/:id", async (req, res) => {
+            const id=req.params.id
+            let query={_id: new ObjectId(id)}
+            const result= await houseHuntingBookings.findOne(query)
+            res.send(result)
+             });
+         
+
+
+
 
 
 
@@ -143,7 +182,7 @@ async function run() {
 
 
     app.post("/register", async (req, res) => {
-      const { fullName, role, phone, email, password } = req.body;
+      const { username, role, phone, email, password } = req.body;
       
       // Check if user with the given email already exists
       const existingUser = await houseHuntingUsers.findOne({ email });
@@ -153,7 +192,7 @@ async function run() {
       
       // Create a new user
       const newUser = {
-        fullName,
+        username,
         role,
         phone,
         email,
